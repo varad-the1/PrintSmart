@@ -1,0 +1,6 @@
+{
+  "name": "PrintSmart",
+  "description": "Prepare PDFs for printing: automatically add blank pages to odd-paged documents and merge them into a single file.",
+  "requestFramePermissions": [],
+  "majorCapabilities": []
+}
