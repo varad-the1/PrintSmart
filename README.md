@@ -27,4 +27,5 @@ Then merge all PDFs in order.
 
 ## Author
 Built by Varad Tonpe
+
 Because print shops were wasting my time.
