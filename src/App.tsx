@@ -117,47 +117,41 @@ export default function App() {
   return (
     <div className="min-h-screen bg-[#0A0A0C] text-[#F5F5F7] font-sans selection:bg-blue-500/30">
       {/* Header */}
-      <header className="sticky top-0 z-40 w-full bg-[#0A0A0C]/80 backdrop-blur-md border-b border-white/5 px-6 pt-[calc(1rem+var(--safe-top))] pb-4 px-safe">
-        <div className="max-w-5xl mx-auto flex items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 flex-shrink-0 flex items-center justify-center">
-              <Logo className="w-12 h-12" />
+      <header className="sticky top-0 z-40 w-full bg-[#0A0A0C]/80 backdrop-blur-md border-b border-white/5 pt-safe px-safe">
+        <div className="max-w-5xl mx-auto flex items-center justify-between gap-4 px-4 py-3 sm:px-6 sm:py-4">
+          <div className="flex items-center gap-2 sm:gap-3">
+            <div className="w-8 h-8 sm:w-10 sm:h-10 flex-shrink-0 flex items-center justify-center">
+              <Logo className="w-8 h-8 sm:w-10 sm:h-10" />
             </div>
-            <div className="hidden sm:block">
-              <h1 className="text-xl font-semibold tracking-tight text-white">PrintSmart</h1>
-              <p className="text-[10px] text-blue-400/80 font-bold uppercase tracking-widest">Premium PDF Prep</p>
+            <div>
+              <h1 className="text-lg sm:text-xl font-semibold tracking-tight text-white leading-tight">PrintSmart</h1>
+              <p className="text-[9px] sm:text-[10px] text-blue-400/80 font-bold uppercase tracking-widest leading-none">Premium PDF Prep</p>
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <button 
-              onClick={() => fileInputRef.current?.click()}
-              className="sm:hidden w-10 h-10 bg-white/5 border border-white/10 rounded-full flex items-center justify-center text-blue-400 active:scale-95 transition-transform"
-            >
-              <Plus className="w-5 h-5" />
-            </button>
             {files.length > 0 && (
               <button 
                 onClick={handleMerge}
                 disabled={isProcessing}
-                className="flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white px-4 sm:px-5 py-2 sm:py-2.5 rounded-full text-sm sm:text-base font-medium transition-all shadow-md active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
+                className="flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white px-3 sm:px-5 py-1.5 sm:py-2.5 rounded-full text-xs sm:text-base font-semibold transition-all shadow-md active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
               >
                 {isProcessing ? (
-                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin" />
                 ) : (
-                  <Plus className="w-4 h-4 hidden sm:block" />
+                  <Plus className="w-3 h-3 sm:w-4 sm:h-4 hidden sm:block" />
                 )}
-                {mergedPdfUrl ? 'Refresh Merge' : (files.length > 1 ? 'Merge All' : 'Process PDF')}
+                {mergedPdfUrl ? 'Refresh' : (files.length > 1 ? 'Merge All' : 'Process')}
               </button>
             )}
           </div>
         </div>
       </header>
 
-      <main className="max-w-5xl mx-auto p-6 md:p-12">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <main className="max-w-5xl mx-auto p-4 sm:p-6 md:p-12">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
           
-          {/* Left Column: Upload & Instructions */}
-          <div className="lg:col-span-1 space-y-6">
+          {/* Left Column: Instructions (Desktop) / Status (Mobile) */}
+          <div className="lg:col-span-1 space-y-4 sm:space-y-6">
             <div className="hidden lg:block bg-[#1C1C1E] rounded-3xl p-8 shadow-sm border border-white/5">
               <h2 className="text-lg font-semibold mb-2">Upload Files</h2>
               <p className="text-gray-400 text-sm mb-6 leading-relaxed">
@@ -177,14 +171,6 @@ export default function App() {
                   <span className="text-sm font-medium text-blue-400 block">Click to upload</span>
                   <span className="text-xs text-gray-500">or drag and drop PDFs</span>
                 </div>
-                <input 
-                  type="file" 
-                  multiple 
-                  accept=".pdf" 
-                  className="hidden" 
-                  ref={fileInputRef}
-                  onChange={handleFileChange}
-                />
               </div>
 
               <div className="mt-8 space-y-4">
@@ -233,8 +219,8 @@ export default function App() {
             )}
           </div>
 
-          {/* Right Column: File List */}
-          <div className="lg:col-span-2 space-y-4">
+          {/* Right Column: File List & Mobile Upload */}
+          <div className="lg:col-span-2 space-y-6">
             <div className="flex items-center justify-between px-2">
               <h2 className="text-lg font-semibold tracking-tight">
                 Document Queue
@@ -251,59 +237,77 @@ export default function App() {
             </div>
 
             {files.length === 0 ? (
-              <div className="h-[400px] border border-white/5 rounded-3xl bg-[#1C1C1E] flex flex-col items-center justify-center text-gray-500 p-8 shadow-inner">
-                <div className="w-20 h-20 bg-white/[0.02] rounded-full flex items-center justify-center mb-6">
-                  <FileText className="w-10 h-10 opacity-20" />
+              <motion.div 
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                onClick={() => fileInputRef.current?.click()}
+                className="h-[360px] border border-white/5 rounded-3xl bg-[#1C1C1E] flex flex-col items-center justify-center text-gray-500 p-8 shadow-inner cursor-pointer active:scale-[0.98] transition-transform"
+              >
+                <div className="w-24 h-24 bg-blue-500/10 rounded-full flex items-center justify-center mb-6 border border-blue-500/20">
+                  <Plus className="w-10 h-10 text-blue-400" />
                 </div>
-                <p className="font-medium text-center">Queue is empty</p>
-                <p className="text-sm text-center max-w-[240px] mt-2 opacity-50">Upload your PDFs to start processing.</p>
-              </div>
+                <p className="font-semibold text-gray-200 text-lg">Add your PDFs</p>
+                <p className="text-sm text-center max-w-[200px] mt-2 opacity-50">Tap to select documents for processing.</p>
+              </motion.div>
             ) : (
-              <div className="grid gap-3">
-                <AnimatePresence initial={false}>
-                  {files.map((file, index) => (
-                    <motion.div
-                      key={file.id}
-                      initial={{ opacity: 0, scale: 0.95 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, x: -20 }}
-                      className="group bg-[#1C1C1E] border border-white/5 rounded-2xl p-4 flex items-start sm:items-center justify-between hover:border-blue-500/30 hover:shadow-lg transition-all gap-3"
-                    >
-                      <div className="flex items-start sm:items-center gap-4 min-w-0 flex-1">
-                        <div className="w-10 h-10 sm:w-12 sm:h-12 flex-shrink-0 bg-blue-500/10 rounded-xl flex items-center justify-center text-blue-400">
-                          <FileText className="w-5 h-5 sm:w-6 sm:h-6" />
-                        </div>
-                        <div className="min-w-0 flex-1">
-                          <p className="text-sm font-semibold truncate w-full text-gray-100">
-                            {index + 1}. {file.file.name}
-                          </p>
-                          <div className="flex flex-wrap items-center gap-2 mt-1">
-                            <span className="text-[11px] text-gray-500 font-medium">
-                              {file.originalPageCount} {file.originalPageCount === 1 ? 'page' : 'pages'}
-                            </span>
-                            {file.addedBlankPage && (
-                              <span className="text-[9px] bg-yellow-500/10 text-yellow-500 px-2 py-0.5 rounded-full font-bold border border-yellow-500/20 flex items-center gap-1 leading-none uppercase tracking-tighter">
-                                <Plus className="w-2 h-2" /> Blank Added
+              <div className="space-y-4">
+                {/* Mobile Add Option - Now above list */}
+                <button 
+                  onClick={() => fileInputRef.current?.click()}
+                  className="w-full py-4 border-2 border-dashed border-white/10 rounded-2xl flex items-center justify-center gap-3 bg-white/[0.02] hover:bg-white/[0.05] active:scale-[0.98] transition-all group"
+                >
+                  <div className="w-8 h-8 bg-blue-500/10 rounded-lg flex items-center justify-center text-blue-400 group-hover:scale-110 transition-transform">
+                    <Plus className="w-5 h-5" />
+                  </div>
+                  <span className="text-sm font-semibold text-gray-300">Add more Documents</span>
+                </button>
+
+                <div className="grid gap-3">
+                  <AnimatePresence initial={false}>
+                    {files.map((file, index) => (
+                      <motion.div
+                        key={file.id}
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, x: -20 }}
+                        className="group bg-[#1C1C1E] border border-white/5 rounded-2xl p-3 sm:p-4 flex items-start sm:items-center justify-between hover:border-blue-500/30 hover:shadow-lg transition-all gap-3"
+                      >
+                        <div className="flex items-start sm:items-center gap-3 sm:gap-4 min-w-0 flex-1">
+                          <div className="w-9 h-9 sm:w-12 sm:h-12 flex-shrink-0 bg-blue-500/10 rounded-xl flex items-center justify-center text-blue-400">
+                            <FileText className="w-5 h-5 sm:w-6 sm:h-6" />
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <p className="text-sm font-semibold truncate w-full text-gray-100">
+                              {index + 1}. {file.file.name}
+                            </p>
+                            <div className="flex flex-wrap items-center gap-2 mt-1">
+                              <span className="text-[11px] text-gray-500 font-medium">
+                                {file.originalPageCount} {file.originalPageCount === 1 ? 'page' : 'pages'}
                               </span>
-                            )}
-                            {file.status === 'completed' && !file.addedBlankPage && (
-                              <span className="text-[9px] bg-blue-500/10 text-blue-400 px-2 py-0.5 rounded-full font-bold border border-blue-500/20 leading-none uppercase tracking-tighter">
-                                Even Pages
-                              </span>
-                            )}
+                              {file.addedBlankPage && (
+                                <span className="text-[9px] bg-yellow-500/10 text-yellow-500 px-2 py-0.5 rounded-full font-bold border border-yellow-500/20 flex items-center gap-1 leading-none uppercase tracking-tighter">
+                                  <Plus className="w-2 h-2" /> Blank Added
+                                </span>
+                              )}
+                              {file.status === 'completed' && !file.addedBlankPage && (
+                                <span className="text-[9px] bg-blue-500/10 text-blue-400 px-2 py-0.5 rounded-full font-bold border border-blue-500/20 leading-none uppercase tracking-tighter">
+                                  Even Pages
+                                </span>
+                              )}
+                            </div>
                           </div>
                         </div>
-                      </div>
-                      
-                      <button 
-                        onClick={() => removeFile(file.id)}
-                        className="p-2 text-gray-500 hover:text-red-400 hover:bg-red-400/10 rounded-full transition-all flex-shrink-0"
-                      >
-                        <Trash2 className="w-5 h-5 sm:w-6 sm:h-6" />
-                      </button>
-                    </motion.div>
-                  ))}
-                </AnimatePresence>
+                        
+                        <button 
+                          onClick={() => removeFile(file.id)}
+                          className="p-2 text-gray-500 hover:text-red-400 hover:bg-red-400/10 rounded-full transition-all flex-shrink-0"
+                        >
+                          <Trash2 className="w-5 h-5 sm:w-6 sm:h-6" />
+                        </button>
+                      </motion.div>
+                    ))}
+                  </AnimatePresence>
+                </div>
               </div>
             )}
           </div>
@@ -359,9 +363,19 @@ export default function App() {
         )}
       </AnimatePresence>
 
-      <footer className="max-w-5xl mx-auto p-12 pb-[calc(3rem+var(--safe-bottom))] text-center text-gray-600 text-[10px] font-bold uppercase tracking-widest px-safe">
-        <p>© 2026 PrintSmart • Pro-Grade Prep</p>
+      <footer className="max-w-5xl mx-auto p-8 sm:p-12 pb-safe text-center text-gray-600 text-[10px] font-bold uppercase tracking-widest px-safe">
+        <p className="mt-4 opacity-50">© 2026 PrintSmart • Pro-Grade Prep</p>
       </footer>
+
+      {/* Hidden Global Input */}
+      <input 
+        type="file" 
+        multiple 
+        accept=".pdf" 
+        className="hidden" 
+        ref={fileInputRef}
+        onChange={handleFileChange}
+      />
     </div>
   );
 }
