@@ -1,6 +1,20 @@
 import React from 'react';
 
 export default function Logo({ className = "w-10 h-10" }: { className?: string }) {
+  const [imgError, setImgError] = React.useState(false);
+
+  if (!imgError) {
+    return (
+      <img 
+        src="/logo.png" 
+        alt="PrintSmart Logo" 
+        className={`${className} object-contain rounded-xl`}
+        onError={() => setImgError(true)}
+        referrerPolicy="no-referrer"
+      />
+    );
+  }
+
   return (
     <div className={`${className} bg-gradient-to-br from-slate-300 to-slate-500 rounded-xl flex items-center justify-center p-1.5 shadow-inner border border-white/20 relative overflow-hidden group`}>
       {/* Glossy reflection */}
