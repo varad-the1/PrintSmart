@@ -19,6 +19,7 @@ This just removes that friction.
 ## How it works (simple logic)
 For each PDF:
 Odd pages → add a blank page
+
 Even pages → leave it as is
 Then merge all PDFs in order.
 
