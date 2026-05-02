@@ -13,18 +13,20 @@ import {
   CheckCircle2, 
   AlertCircle,
   Loader2,
-  Printer,
   ChevronRight,
   Eye,
   X
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { processPdf, mergePdfs, ProcessedFile } from './lib/pdfUtils';
+import Logo from './components/Logo';
+import { savePdf } from './lib/downloadHelper';
 
 export default function App() {
   const [files, setFiles] = useState<ProcessedFile[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
   const [mergedPdfUrl, setMergedPdfUrl] = useState<string | null>(null);
+  const [mergedBytes, setMergedBytes] = useState<Uint8Array | null>(null);
   const [showPreview, setShowPreview] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -61,12 +63,14 @@ export default function App() {
     );
 
     setFiles(prev => [...prev, ...newProcessedFiles]);
-    setMergedPdfUrl(null); // Reset merge if new files added
+    setMergedPdfUrl(null);
+    setMergedBytes(null);
   };
 
   const removeFile = (id: string) => {
     setFiles(prev => prev.filter(f => f.id !== id));
     setMergedPdfUrl(null);
+    setMergedBytes(null);
   };
 
   const handleMerge = async () => {
@@ -79,8 +83,9 @@ export default function App() {
           return data;
         })
       );
-      const mergedBytes = await mergePdfs(processedBuffers);
-      const blob = new Blob([mergedBytes], { type: 'application/pdf' });
+      const merged = await mergePdfs(processedBuffers);
+      setMergedBytes(merged);
+      const blob = new Blob([merged], { type: 'application/pdf' });
       const url = URL.createObjectURL(blob);
       setMergedPdfUrl(url);
     } catch (err) {
@@ -103,18 +108,24 @@ export default function App() {
     }
   };
 
+  const handleDownload = async () => {
+    if (mergedBytes) {
+      await savePdf(mergedBytes, "PrintSmart_Merged.pdf");
+    }
+  };
+
   return (
     <div className="min-h-screen bg-[#0A0A0C] text-[#F5F5F7] font-sans selection:bg-blue-500/30">
       {/* Header */}
       <header className="sticky top-0 z-40 w-full bg-[#0A0A0C]/80 backdrop-blur-md border-b border-white/5 px-6 pt-[calc(1rem+var(--safe-top))] pb-4 px-safe">
         <div className="max-w-5xl mx-auto flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-blue-600 rounded-xl flex-shrink-0 flex items-center justify-center shadow-lg shadow-blue-500/20">
-              <Printer className="text-white w-6 h-6" />
+            <div className="w-12 h-12 flex-shrink-0 flex items-center justify-center">
+              <Logo className="w-12 h-12" />
             </div>
             <div className="hidden sm:block">
-              <h1 className="text-xl font-semibold tracking-tight">PrintSmart</h1>
-              <p className="text-[10px] text-gray-500 font-medium uppercase tracking-wider">PDF Prep Suite</p>
+              <h1 className="text-xl font-semibold tracking-tight text-white">PrintSmart</h1>
+              <p className="text-[10px] text-blue-400/80 font-bold uppercase tracking-widest">Premium PDF Prep</p>
             </div>
           </div>
           <div className="flex items-center gap-2">
@@ -203,14 +214,13 @@ export default function App() {
                   <span className="truncate">Ready for Printing</span>
                 </h3>
                 <div className="flex flex-col gap-3">
-                  <a 
-                    href={mergedPdfUrl} 
-                    download="PrintSmart_Merged.pdf"
+                  <button 
+                    onClick={handleDownload}
                     className="flex items-center justify-center gap-2 bg-green-600 hover:bg-green-500 text-white py-3 rounded-full text-sm sm:text-base font-semibold transition-all shadow-md active:scale-95"
                   >
                     <Download className="w-4 h-4" />
                     Download Merged
-                  </a>
+                  </button>
                   <button 
                     onClick={() => setShowPreview(true)}
                     className="flex items-center justify-center gap-2 bg-white/5 hover:bg-white/10 text-green-400 border border-green-500/20 py-3 rounded-full text-sm sm:text-base font-semibold transition-all active:scale-95"
@@ -321,14 +331,13 @@ export default function App() {
                   <span className="font-semibold text-gray-200">Merged PDF Preview</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <a 
-                    href={mergedPdfUrl} 
-                    download="PrintSmart_Merged.pdf"
+                  <button 
+                    onClick={handleDownload}
                     className="p-2 text-blue-400 hover:bg-blue-400/10 rounded-full transition-all"
                     title="Download"
                   >
                     <Download className="w-5 h-5" />
-                  </a>
+                  </button>
                   <button 
                     onClick={() => setShowPreview(false)}
                     className="p-2 text-gray-400 hover:bg-white/5 rounded-full transition-all"
