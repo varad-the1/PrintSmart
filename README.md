@@ -1,20 +1,35 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+## PrintSmart
 
-# Run and deploy your AI Studio app
+A simple tool I built to fix one stupidly annoying real-life problem.
 
-This contains everything you need to run your app locally.
+Whenever I go to take printouts, I usually have multiple PDFs. Some of them have odd pages, and when printed double-sided, everything gets misaligned and messy. So I end up manually merging files and checking page counts like an idiot every time.
 
-View your app in AI Studio: https://ai.studio/apps/7d568697-03a7-4d95-bf50-94c2b6585927
+This app fixes that.
 
-## Run Locally
+What it does
+Upload multiple PDF files
+Automatically checks page count for each file
+If a file has an odd number of pages, it adds a blank page at the end
+Merges everything into one clean PDF
+Lets you download the final file (ready for printing)
+## Why this exists
 
-**Prerequisites:**  Node.js
+Because standing in a print shop queue and realizing your pages are messed up is pain.
 
+This just removes that friction.
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+## How it works (simple logic)
+
+For each PDF:
+
+Odd pages → add a blank page
+
+Even pages → leave it as is
+
+Then merge all PDFs in order.
+
+## Author
+
+Built by Varad Tonpe
+
+Because print shops were wasting my time.
